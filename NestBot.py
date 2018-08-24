@@ -33,6 +33,7 @@ class db_stuff():
         self.mysql_table=y['database']['mysql-tbl']
 
     def set_table(self, table):
+        table = table.replace('-','_')
         self.mysql_table = table
     def get_host(self,):
         return self.mysql_host
@@ -102,6 +103,7 @@ def get_sql_response(sql_command):
     return resp
 
 def check_for_table(table):
+    table = table.replace('-','_')
     db = MySQLdb.connect(host=mydb_stuff.get_host(),user=mydb_stuff.get_user(),passwd=mydb_stuff.get_pass(),db=mydb_stuff.get_db())
     cur = db.cursor()
     str_command = "SHOW TABLES LIKE \'" + table + "\'"
@@ -170,7 +172,7 @@ async def setnest(ctx, *args):
         if check_park(park_name):
             print("We have a Park that's in our Nest List")
             #str_command = "INSERT INTO " + mydb_stuff.get_table() + " VALUES(\'" + str(park_name) + "\',\'" + str(nest_mon)  + "\');"
-            str_command = "UPDATE " + mydb_stuff.get_table() + "SET nestMon = \'" + str(nest_mon) + "\' WHERE parkName = \'" + str(park_name) + "\';"
+            str_command = "UPDATE " + mydb_stuff.get_table() + " SET nestMon = \'" + str(nest_mon) + "\' WHERE parkName = \'" + str(park_name) + "\';"
             execute_sql_command(str_command)
         else:
             await ctx.channel.send("This Park is not in our Database, Please have an admin add it.")
@@ -196,7 +198,7 @@ async def getnests(ctx, *args):
     print(resp)
     st_resp = "```\n"
     for i in resp:
-        loc, mon = i
+        loc, mon, lat, lon = i
         st_resp = st_resp + str(loc) + "\t: " + str(mon) + "\n"
     st_resp += "\n```"
     await ctx.channel.send(st_resp)
